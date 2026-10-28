@@ -62,7 +62,8 @@ async def require_access_token(request: Request, call_next):
     if not MCP_ACCESS_TOKEN:
         return JSONResponse({"error": "Server not configured securely: set MCP_ACCESS_TOKEN."}, status_code=503)
     auth = request.headers.get("authorization", "")
-    if auth != f"Bearer {MCP_ACCESS_TOKEN}":
+    api_key_header = request.headers.get("x-api-key", "")
+    if auth != f"Bearer {MCP_ACCESS_TOKEN}" and api_key_header != MCP_ACCESS_TOKEN:
         return JSONResponse({"error": "Unauthorized"}, status_code=401)
     return await call_next(request)
 
